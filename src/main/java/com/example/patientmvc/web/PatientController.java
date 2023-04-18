@@ -63,22 +63,23 @@ public class PatientController {
 
     @PostMapping(path = "/save")
     //une fois tu cree un patient tu fait la validation
-    public String Save(Model model, @Valid Patient patient, BindingResult bindingResult){
+    public String Save(Model model, @Valid Patient patient, BindingResult bindingResult,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "") String Name){
         if(bindingResult.hasErrors())  return "formPatients";
 
         patientRepository.save(patient);
-        return "redirect:/index";
+        return "redirect:/index?page=" +page+ "&Name="+Name;
     }
 
-    @PostMapping (path = "/edit")
-    public String Edit(Model model, Long Id, int page, String Name){
-        Patient patient =  patientRepository.findById(Id).orElse(null);
-        if(patient == null)throw new RuntimeException("Patient Introuvable");
+    @GetMapping(path = "/edit")
+    public String editPatient(Model model, Long id, int page, String Name){
+        Patient patient = patientRepository.findById(id).orElse(null);
+        if(patient==null) throw new RuntimeException("Patient introuvable");
 
-        model.addAttribute("pat", patient);
-
+        model.addAttribute("patient", patient);
+        model.addAttribute("page", page);
         model.addAttribute("Name", Name);
-        model.addAttribute("currentpage", page);
-        return "editPatients?page="+ page+ "&Name="+Name;
+        return "editPatients";
     }
 }

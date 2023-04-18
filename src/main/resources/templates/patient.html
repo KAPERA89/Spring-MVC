@@ -29,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <form method="get" th:action="@{index}">
+                        <form method="post" th:action="@{index}">
                             <label>Key word</label>
                             <input type="text" name="Name" th:value="${Name}">
                             <button type="submit" class="btn btn-primary"> Search </button>
@@ -51,7 +51,7 @@
                             </td>
                             <td>
                                 <a class="btn btn-info"
-                                    th:href="@{edit(Id=${p.id}, page=${currentpage}, Name=${Name})}"
+                                    th:href="@{edit(id=${p.id},page=${currentpage}, Name=${Name})}"
                                 >
                                     Update
                                 </a>
@@ -63,7 +63,7 @@
                 <nav>
                     <ul class="pagination">
                         <li th:each="page, status:${pages}">
-                            <a th:text="${status.}"
+                            <a th:text="${status.index}"
                                class="page-link"
                                th:href="@{index(page=${status.index}, Name=(${Name}))}">
                             </a>
