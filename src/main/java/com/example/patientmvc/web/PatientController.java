@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +24,7 @@ public class PatientController {
 
     private PatientRepository patientRepository;
 
-    @GetMapping(path = "/index")
+    @GetMapping(path = "/user/index")
     public String Patient(Model model,
                         @RequestParam(name = "page", defaultValue = "0") int page,
                         @RequestParam(name = "size", defaultValue = "5") int size,
@@ -39,10 +40,11 @@ public class PatientController {
         return "patient";
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/admin/delete")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String Delete(Long Id, int page, String Name){
         patientRepository.deleteById(Id);
-        return "redirect:/index?page="+ page+ "&Name="+Name;
+        return "redirect:/user/index?page="+ page+ "&Name="+Name;
     }
 
     @GetMapping(path = "/patients")
@@ -53,32 +55,39 @@ public class PatientController {
 
     @GetMapping(path = "/")
     public String home(){
-        return "redirect:/index";
+        return "redirect:/user/index";
     }
 
-    @GetMapping(path = "/formPatients")
+
+    @GetMapping(path = "/admin/formPatients")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String formPatients(Model model){
         model.addAttribute("patient", new Patient());
         return "formPatients";
     }
 
-    @PostMapping(path = "/save")
+    @PostMapping(path = "/admin/save")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     //une fois tu cree un patient tu fait la validation
-    public String Save(Model model, @Valid Patient patient, BindingResult bindingResult,
+    public String Save(Model model, @Valid Patient patient1, BindingResult bindingResult,
                        @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "") String Name){
+                       @RequestParam(defaultValue = "") String Name)
+    {
         if(bindingResult.hasErrors())  return "formPatients";
 
-        patientRepository.save(patient);
-        return "redirect:/index?page=" +page+ "&Name="+Name;
+        System.out.println(patient1);
+        patientRepository.save(patient1);
+        return "redirect:/user/index?page=" +page+ "&Name="+Name;
     }
 
-    @GetMapping(path = "/edit")
+    @GetMapping(path = "/admin/edit")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String editPatient(Model model, Long id, int page, String Name){
         Patient patient = patientRepository.findById(id).orElse(null);
         if(patient==null) throw new RuntimeException("Patient introuvable");
 
         model.addAttribute("patient", patient);
+        System.out.println(patient);
         model.addAttribute("page", page);
         model.addAttribute("Name", Name);
         return "editPatients";
