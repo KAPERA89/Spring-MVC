@@ -29,7 +29,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <form method="get" th:action="@{/user/index}">
+                        <form method="get" th:action="@{/user/index(page=${currentpage}, Name=${Name})}">
                             <label for="test">Key word</label>
                             <input  id="test" type="text" name="Name" th:value="${Name}">
                             <button type="submit" class="btn btn-primary"> Search </button>
